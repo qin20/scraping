@@ -1,0 +1,25 @@
+{
+    "env": {
+        "node": true,
+        "browser": true,
+        "commonjs": true,
+        "es2021": false
+    },
+    "extends": [
+        "airbnb-base"
+    ],
+    "parserOptions": {
+        "ecmaVersion": "latest",
+        "sourceType": "script"
+    },
+    "rules": {
+        "indent": ["error", 4],
+        "no-underscore-dangle": "off",
+        "arrow-body-style": "off",
+        "no-return-await": "off",
+        "no-plusplus": "off",
+        "import/no-dynamic-require": "off",
+        "global-require": "off",
+        "consistent-return": "off"
+    }
+}
