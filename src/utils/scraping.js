@@ -15,6 +15,10 @@ async function getProxy() {
         logger.debug('获取代理开始...');
         const resp = await axios.get(`${PROXY_POOL}/get`);
         logger.debug({ proxy: resp.data.proxy }, '获取代理成功');
+        if (!resp.data.proxy) {
+            logger.warn('获取代理失败 - 没有代理');
+            return null;
+        }
         return resp.data.proxy;
     } catch (e) {
         logger.warn(`获取代理失败 - ${e.message}`);
@@ -119,23 +123,25 @@ async function scraping1(url, options = {}) {
          */
         const { retry = 10 } = options;
         async function go(times = 0) {
-            const proxy = await getProxy();
-            const browser = await puppeteer.launch({
-                // args: [`--proxy-server=${proxy}`],
-            });
+            const proxy = Math.random() > 0.5 ? await getProxy() : null;
+            const browser = proxy ? await puppeteer.launch({
+                args: [`--proxy-server=${proxy}`],
+            }) : await puppeteer.launch();
+            const page = await browser.newPage();
             try {
-                const page = await browser.newPage();
-                logger.info('请求开始...');
+                logger.info({ proxy }, '请求开始...');
                 await page.goto(url, { timeout: 120 * 1000 });
                 logger.info('请求成功');
                 const html = await page.evaluate(() => document.documentElement.innerHTML);
                 // 内存回收
+                await page.close();
                 await browser.close();
-                logger.info('抓取内容结束');
+                logger.info({ url }, '抓取内容结束');
                 resolve(html);
             } catch (e) {
                 logger.warn(`请求失败 - ${e.message}`);
                 await removeProxy(proxy);
+                await page.close();
                 await browser.close();
                 if (times < retry) {
                     logger.info(`开始重试请求${times + 1}/${retry}...`);

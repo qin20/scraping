@@ -1,4 +1,5 @@
 const path = require('path');
+const fs = require('fs');
 const cheerio = require('cheerio');
 const invariant = require('tiny-invariant');
 const scraping = require('../utils/scraping');
@@ -16,7 +17,7 @@ let dataCache = require(dataCachePath) || {};
 
 (async () => {
     let page = 0;
-    const pageTotal = 1;
+    const pageTotal = 20000;
     concurrent(() => {
         while (dataCache[++page]) {
             continue;
@@ -29,17 +30,18 @@ let dataCache = require(dataCachePath) || {};
         task.then((html) => {
             const $ = cheerio.load(html);
             const urls = {};
-            $('.s-post-summary--content-title a').forEach((a) => {
-                urls[a.href] = 1;
+            $('.s-post-summary--content-title a').each((i, a) => {
+                urls[a.attribs.href] = 1;
             });
-            console.log(urls);
-            data = { ...data, ...urls };
-            dataCache = { ...dataCache, [currentPage]: 1 };
-            // fs.writeFileSync(dataPath, `module.exports = ${JSON.stringify(data, null, 4)};\n`);
-            // fs.writeFileSync(dataCachePath, `module.exports = ${JSON.stringify(dataCache, null, 4)};\n`);
+            if (Object.keys(urls).length) {
+                data = { ...data, ...urls };
+                dataCache = { ...dataCache, [currentPage]: 1 };
+                fs.writeFileSync(dataPath, `module.exports = ${JSON.stringify(data, null, 4)};\n`);
+                fs.writeFileSync(dataCachePath, `module.exports = ${JSON.stringify(dataCache, null, 4)};\n`);
+            }
         }).catch((e) => {
             console.log('=========', e.message);
         });
         return task;
-    }, 1);
+    });
 })();

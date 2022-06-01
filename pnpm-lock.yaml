@@ -6,8 +6,8 @@ specifiers:
   eslint: ^8.16.0
   eslint-config-airbnb-base: ^15.0.0
   eslint-plugin-import: ^2.26.0
-  jquery: ^3.6.0
   pino: ^7.11.0
+  proxy-chain: ^2.0.1
   puppeteer: ^14.1.2
   random-useragent: ^0.5.0
   tiny-invariant: ^1.2.0
@@ -15,8 +15,8 @@ specifiers:
 dependencies:
   axios: 0.27.2
   cheerio: 1.0.0-rc.11
-  jquery: 3.6.0
   pino: 7.11.0
+  proxy-chain: 2.0.1
   puppeteer: 14.1.2
   random-useragent: 0.5.0
   tiny-invariant: 1.2.0
@@ -1007,10 +1007,6 @@ packages:
     resolution: {integrity: sha512-RHxMLp9lnKHGHRng9QFhRCMbYAcVpn69smSGcq3f36xjgVVWThj4qqLbTLlq7Ssj8B+fIQ1EuCEGI2lKsyQeIw==}
     dev: true
 
-  /jquery/3.6.0:
-    resolution: {integrity: sha512-JVzAR/AjBvVt2BmYhxRCSYysDsPcssdmTFnzyLEts9qNwmjmu4JTAMYubEfwVOSwpQ1I1sKKFcxhZCI2buerfw==}
-    dev: false
-
   /js-yaml/4.1.0:
     resolution: {integrity: sha512-wpxZs9NoxZaJESJGIZTyDEaYpl0FKSA+FB9aJiyemKhMwkxQg63h4T1KJgUGHpTqPDNRcmmYLugrRjJlBtWvRA==}
     hasBin: true
@@ -1308,6 +1304,13 @@ packages:
   /progress/2.0.3:
     resolution: {integrity: sha512-7PiHtLll5LdnKIMw100I+8xJXR5gW2QwWYkT6iJva0bXitZKa/XMrSbdmg3r2Xnaidz9Qumd0VPaMrZlF9V9sA==}
     engines: {node: '>=0.4.0'}
+    dev: false
+
+  /proxy-chain/2.0.1:
+    resolution: {integrity: sha512-pDjTqpibdeUFsiekNTwW8rrj6UBpSLS2YNIKXuDHfYaV7LXpy5tRDiz6jU8Yg/GR3KZLnCBo8QrCMaTSN3KB/A==}
+    engines: {node: '>=14'}
+    dependencies:
+      tslib: 2.4.0
     dev: false
 
   /proxy-from-env/1.1.0:
