@@ -1,9 +1,9 @@
 const scraping = require('./utils/scraping');
-const concurrent = require('./utils/concurrent');
+// const concurrent = require('./utils/concurrent');
 
 (async () => {
     try {
-        const data = await scraping('https://stackoverflow.com/questions/tagged/javascript?tab=Votes');
+        const data = await scraping('http://stackoverflow.com/questions/tagged/javascript?tab=Votes');
         // const data = await scraping('https://stackoverflow.com/questions/39954826/cloud9-nodejs-error-write-eproto-140261073610560-and-in-localhost-everything');
         // const data = await scraping('https://www.google.com');
         // const data = await scraping('https://www.baidu.com');

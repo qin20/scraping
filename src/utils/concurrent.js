@@ -9,7 +9,7 @@ const logger = require('pino')();
  * @param {number} max 并发数
  * @param {string} taskName
  */
-async function concurrent(getTask, max = 5, taskName = '并发') {
+async function concurrent(getTask, max = 10, taskName = '并发') {
     if (!getTask) {
         logger.error(`[${taskName}]任务运行失败，缺少'getTask'参数`);
         return;

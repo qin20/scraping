@@ -1,6 +1,7 @@
 const axios = require('axios');
 const randomUseragent = require('random-useragent');
 const logger = require('pino')();
+const puppeteer = require('puppeteer');
 
 // 代理池地址
 const PROXY_POOL = 'http://127.0.0.1:5010';
@@ -82,7 +83,8 @@ async function scraping(url, options = {}) {
             logger.info(opts, '请求开始...');
             axios.get(url, opts)
                 .then(async (resp) => {
-                    logger.info(resp.data, '请求成功');
+                    logger.info('请求成功');
+                    logger.debug(resp.data);
                     await removeProxy(proxy);
                     logger.info('抓取内容结束');
                     resolve(resp.data);
@@ -94,7 +96,7 @@ async function scraping(url, options = {}) {
                         logger.info(`开始重试请求${times + 1}/${retry}...`);
                         go(times + 1);
                     } else {
-                        logger.error(e, '抓取内容失败');
+                        logger.error(`抓取内容失败 - ${e.message}`);
                         reject(e);
                     }
                 });
@@ -104,4 +106,49 @@ async function scraping(url, options = {}) {
     });
 }
 
-module.exports = scraping;
+async function scraping1(url, options = {}) {
+    logger.info({ url }, '抓取内容开始...');
+    if (!url) {
+        logger.error('抓取内容失败，缺少URL参数');
+        return;
+    }
+    return new Promise((resolve, reject) => {
+        /**
+         * 每个url支持一定数量的重试次数，默认为5次
+         * @param {*} times
+         */
+        const { retry = 10 } = options;
+        async function go(times = 0) {
+            const proxy = await getProxy();
+            const browser = await puppeteer.launch({
+                // args: [`--proxy-server=${proxy}`],
+            });
+            try {
+                const page = await browser.newPage();
+                logger.info('请求开始...');
+                await page.goto(url, { timeout: 120 * 1000 });
+                logger.info('请求成功');
+                const html = await page.evaluate(() => document.documentElement.innerHTML);
+                // 内存回收
+                await browser.close();
+                logger.info('抓取内容结束');
+                resolve(html);
+            } catch (e) {
+                logger.warn(`请求失败 - ${e.message}`);
+                await removeProxy(proxy);
+                await browser.close();
+                if (times < retry) {
+                    logger.info(`开始重试请求${times + 1}/${retry}...`);
+                    go(times + 1);
+                } else {
+                    logger.error(`抓取内容失败 - ${e.message}`);
+                    reject(e);
+                }
+            }
+        }
+
+        go();
+    });
+}
+
+module.exports = scraping1;
