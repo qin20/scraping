@@ -144,8 +144,10 @@ async function scraping1(url, options = {}) {
                 await page.close();
                 await browser.close();
                 if (times < retry) {
-                    logger.info(`开始重试请求${times + 1}/${retry}...`);
-                    go(times + 1);
+                    setTimeout(() => {
+                        logger.info(`开始重试请求${times + 1}/${retry}...`);
+                        go(times + 1);
+                    }, Math.random() * 1000);
                 } else {
                     logger.error(`抓取内容失败 - ${e.message}`);
                     reject(e);

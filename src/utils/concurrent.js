@@ -2,6 +2,7 @@
  * 并发控制
  */
 const logger = require('pino')();
+const duration = require('duration');
 
 /**
  * 并发控制运行getTask
@@ -16,7 +17,40 @@ async function concurrent(getTask, max = 10, taskName = '并发') {
     }
 
     let taskCount = 0;
+    let doneCount = 0;
 
+    const start = new Date();
+
+    let logTimeout;
+    const log = () => {
+        if (logTimeout) {
+            clearTimeout(logTimeout);
+        }
+        logTimeout = setTimeout(() => {
+            logger.info(`[${taskName} - concurrent] 当前运行任务${taskCount}, 已完成任务${doneCount}，已运行时间：${duration(start, new Date()).toString('%Hs:%M:%S')}`);
+        }, 500);
+    };
+
+    const addTask = () => {
+        setTimeout(() => {
+            log();
+            if (taskCount < max) {
+                const task = getTask();
+                if (task) {
+                    taskCount++;
+                    task.finally(() => {
+                        taskCount--;
+                        doneCount++;
+                        log();
+                    });
+                }
+            }
+            addTask();
+        }, Math.random() * 1000);
+    };
+
+    addTask();
+    return;
     const next = () => {
         const task = getTask();
         if (task) {

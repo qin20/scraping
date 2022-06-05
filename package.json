@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "proxy": "node ./src/proxies/index.js",
-    "stackoverflow": "node ./src/spiders/stackoverflow.js python | pino-pretty -S -c -t -i pid,hostname > ./logs/stackoverflow.log "
+    "stackoverflow": "node ./src/spiders/stackoverflow.js javascript | pino-pretty -S -c -t SYS:standard -i pid,hostname >> ./logs/stackoverflow-js-20220602.log "
   },
   "keywords": [],
   "author": "",
@@ -13,6 +13,7 @@
   "dependencies": {
     "axios": "^0.27.2",
     "cheerio": "1.0.0-rc.11",
+    "duration": "^0.2.2",
     "pino": "^7.11.0",
     "proxy-chain": "^2.0.1",
     "puppeteer": "^14.1.2",
